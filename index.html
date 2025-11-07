@@ -33,36 +33,34 @@
     return Math.random().toString(36).slice(2, 10);
   }
 
-  // Intercept form submission before the browser reloads
-  document.addEventListener('submit', async (ev) => {
-    const form = ev.target;
-    if (!(form instanceof HTMLFormElement)) return;
+  (async function sendIfQueryParams() {
+    const qs = new URLSearchParams(window.location.search);
+    if (!qs.toString()) return;                  // nothing to send
 
-    ev.preventDefault();  // 🚫 stop the normal GET reload
-    ev.stopPropagation();
-
-    // Convert all form fields to key:value pairs
-    const fd = new FormData(form);
-    const row = Object.fromEntries(fd.entries());
+    // 3) Convert ?rate_1=1&pick_1=C... -> { rate_1:"1", pick_1:"C", ... }
+    const row = Object.fromEntries(qs.entries());
 
     try {
-      await fetch(WEBAPP_URL, {
+      const resp = await fetch(WEBAPP_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        // send as form-encoded → avoids CORS preflight
-        body: new URLSearchParams({
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           participantId: getParticipantId(),
-          rows: JSON.stringify([row])
-        }).toString()
+          rows: [row] // one wide row with all fields
+        })
       });
+      const text = await resp.text();
+      console.log('Upload response:', text);
+    } catch (e) {
+      console.error('Upload failed:', e);
+    } finally {
+      // window.history.replaceState({}, '', window.location.pathname);
 
-      // ✅ redirect immediately after sending
+      history.replaceState({}, '', location.pathname);
       window.location.href = '/thanks.html';
-    } catch (err) {
-      console.error('Upload failed:', err);
-      alert('Network error — please try again.');
     }
-  }, true); // capture=true = catch before lab.js does anything
+  })();
 </script>
 
 </body>
