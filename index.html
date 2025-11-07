@@ -26,48 +26,43 @@
     </main>
   </div>
   <script>
-  // 1) Put your Apps Script Web App URL here:
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxloi-Zqdkg_PTBcSAwywgEBJaidsfEzc-X7yhJtXBSSTZyQUXJOYPVmOgbGX869bD8/exec';
 
-  // 2) Stable participant ID (kept in localStorage)
+  // Always generate a new random ID
   function getParticipantId() {
-    let pid = localStorage.getItem('pid');
-    if (!pid) {
-      // simple 8-char ID
-      pid = Math.random().toString(36).slice(2, 10);
-      localStorage.setItem('pid', pid);
-    }
-    return pid;
+    return Math.random().toString(36).slice(2, 10);
   }
 
-  (async function sendIfQueryParams() {
-    const qs = new URLSearchParams(window.location.search);
-    if (!qs.toString()) return;                  // nothing to send
+  // Intercept form submission before the browser reloads
+  document.addEventListener('submit', async (ev) => {
+    const form = ev.target;
+    if (!(form instanceof HTMLFormElement)) return;
 
-    // 3) Convert ?rate_1=1&pick_1=C... -> { rate_1:"1", pick_1:"C", ... }
-    const row = Object.fromEntries(qs.entries());
+    ev.preventDefault();  // 🚫 stop the normal GET reload
+    ev.stopPropagation();
+
+    // Convert all form fields to key:value pairs
+    const fd = new FormData(form);
+    const row = Object.fromEntries(fd.entries());
 
     try {
-      const resp = await fetch(WEBAPP_URL, {
+      await fetch(WEBAPP_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        // send as form-encoded → avoids CORS preflight
+        body: new URLSearchParams({
           participantId: getParticipantId(),
-          rows: [row] // one wide row with all fields
-        })
+          rows: JSON.stringify([row])
+        }).toString()
       });
-      const text = await resp.text();
-      console.log('Upload response:', text);
-    } catch (e) {
-      console.error('Upload failed:', e);
-    } finally {
-      // window.history.replaceState({}, '', window.location.pathname);
 
-      history.replaceState({}, '', location.pathname);
+      // ✅ redirect immediately after sending
       window.location.href = '/thanks.html';
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert('Network error — please try again.');
     }
-  })();
+  }, true); // capture=true = catch before lab.js does anything
 </script>
 
 </body>
