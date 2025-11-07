@@ -62,11 +62,10 @@
     } catch (e) {
       console.error('Upload failed:', e);
     } finally {
-      // 4) Clean the URL so refresh/bookmark doesn’t re-send
-      window.history.replaceState({}, '', window.location.pathname);
+      // window.history.replaceState({}, '', window.location.pathname);
 
-      // Optional: show a simple thank-you message
-      // document.body.innerHTML = '<h2>Thanks! Your response has been recorded.</h2>';
+      history.replaceState({}, '', location.pathname);
+      window.location.href = '/thanks.html';
     }
   })();
 </script>
