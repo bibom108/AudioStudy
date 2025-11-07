@@ -25,7 +25,9 @@
       </div>
     </main>
   </div>
-  <!-- <script>
+
+
+<script>
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxloi-Zqdkg_PTBcSAwywgEBJaidsfEzc-X7yhJtXBSSTZyQUXJOYPVmOgbGX869bD8/exec';
 
   // Always generate a new random ID
@@ -61,47 +63,7 @@
       window.location.href = '/thanks.html';
     }
   })();
-</script> -->
-<script>
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxloi-Zqdkg_PTBcSAwywgEBJaidsfEzc-X7yhJtXBSSTZyQUXJOYPVmOgbGX869bD8/exec';
-
-  // Always generate a new random ID
-  function getParticipantId() {
-    return Math.random().toString(36).slice(2, 10);
-  }
-
-  // Intercept form submission before the page reloads
-  document.addEventListener('submit', async (ev) => {
-    const form = ev.target;
-    if (!(form instanceof HTMLFormElement)) return;
-
-    ev.preventDefault();  // 🚫 stop default reload
-    ev.stopPropagation();
-
-    // Collect all form data
-    const fd = new FormData(form);
-    const row = Object.fromEntries(fd.entries());
-
-    // Send it to Google Apps Script (form-encoded → no CORS preflight)
-    try {
-      await fetch(WEBAPP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body: new URLSearchParams({
-          participantId: getParticipantId(),
-          rows: JSON.stringify([row]),
-        }).toString(),
-      });
-
-      // Redirect to thank-you page
-      window.location.href = '/thanks.html';
-    } catch (err) {
-      console.error('Upload failed:', err);
-      alert('Network error: please try again.');
-    }
-  }, true); // capture=true ensures it runs before any internal handler
 </script>
-
 
 </body>
 </html>
