@@ -29,65 +29,46 @@
   // 1) Put your Apps Script Web App URL here:
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxloi-Zqdkg_PTBcSAwywgEBJaidsfEzc-X7yhJtXBSSTZyQUXJOYPVmOgbGX869bD8/exec';
 
-  // Stable participant id
-  function getPid() {
+  // 2) Stable participant ID (kept in localStorage)
+  function getParticipantId() {
     let pid = localStorage.getItem('pid');
     if (!pid) {
+      // simple 8-char ID
       pid = Math.random().toString(36).slice(2, 10);
       localStorage.setItem('pid', pid);
     }
     return pid;
   }
 
-  // 0) (Optional) If you ever land here with a query string, scrub it ASAP
-  if (location.search) {
-    history.replaceState({}, '', location.pathname);
-  }
+  (async function sendIfQueryParams() {
+    const qs = new URLSearchParams(window.location.search);
+    if (!qs.toString()) return;                  // nothing to send
 
-  // 1) Intercept ANY form submit before the browser navigates
-  document.addEventListener('submit', async (ev) => {
-    const form = ev.target;
-    if (!(form instanceof HTMLFormElement)) return;
-
-    ev.preventDefault();                 // stop the GET navigation
-    ev.stopPropagation();                // stop further handlers
-    // Optional: disable the submit button to avoid double-clicks
-    const submitter = document.activeElement;
-    if (submitter && submitter.disabled !== undefined) submitter.disabled = true;
+    // 3) Convert ?rate_1=1&pick_1=C... -> { rate_1:"1", pick_1:"C", ... }
+    const row = Object.fromEntries(qs.entries());
 
     try {
-      // 2) Collect all fields
-      const fd = new FormData(form);
-      const row = Object.fromEntries(fd.entries());  // {rate_1: "1", pick_1: "C", ...}
-
-      // 3) Send as form-encoded to avoid CORS preflight
-      const body = new URLSearchParams();
-      body.set('participantId', getPid());
-      body.set('rows', JSON.stringify([row])); // one wide row
-
-      await fetch(WEBAPP_URL, {
+      const resp = await fetch(WEBAPP_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body: body.toString()
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          participantId: getParticipantId(),
+          rows: [row] // one wide row with all fields
+        })
       });
+      const text = await resp.text();
+      console.log('Upload response:', text);
+    } catch (e) {
+      console.error('Upload failed:', e);
+    } finally {
+      // 4) Clean the URL so refresh/bookmark doesn’t re-send
+      window.history.replaceState({}, '', window.location.pathname);
 
-      // 4) Clean URL (no query), then show a lightweight thank-you
-      history.replaceState({}, '', location.pathname);
-      // Replace the page or show a message; pick ONE of these:
-      // location.href = location.pathname + '#done';  // silent "done" hash
-      document.body.innerHTML = '<div style="max-width:640px;margin:12vh auto;font:16px/1.6 system-ui;text-align:center;"><h2>Thanks!</h2><p>Your response has been recorded.</p></div>';
-
-      // If lab.js needs to end explicitly (rare in full-site export), uncomment:
-      // if (window.study && typeof study.end === 'function') study.end();
-
-    } catch (err) {
-      console.error('Upload failed:', err);
-      // Fallback: if upload fails, you can let the original submit happen
-      // form.submit();
-      alert('Network issue while saving. Please try again.');
-      if (submitter) submitter.disabled = false;
+      // Optional: show a simple thank-you message
+      // document.body.innerHTML = '<h2>Thanks! Your response has been recorded.</h2>';
     }
-  }, true); // capture=true => we catch it before navigation
+  })();
 </script>
 
 </body>
