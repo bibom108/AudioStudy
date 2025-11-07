@@ -30,9 +30,14 @@
 <script>
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxloi-Zqdkg_PTBcSAwywgEBJaidsfEzc-X7yhJtXBSSTZyQUXJOYPVmOgbGX869bD8/exec';
 
-  // Always generate a new random ID
+  // 2) Stable participant ID (kept in localStorage)
   function getParticipantId() {
-    return Math.random().toString(36).slice(2, 10);
+    let pid = localStorage.getItem('pid');
+    if (!pid) {
+      pid = Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('pid', pid);
+    }
+    return pid;
   }
 
   (async function sendIfQueryParams() {
