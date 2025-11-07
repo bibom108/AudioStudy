@@ -25,5 +25,50 @@
       </div>
     </main>
   </div>
+  <script>
+  // 1) Put your Apps Script Web App URL here:
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxloi-Zqdkg_PTBcSAwywgEBJaidsfEzc-X7yhJtXBSSTZyQUXJOYPVmOgbGX869bD8/exec';
+
+  // 2) Stable participant ID (kept in localStorage)
+  function getParticipantId() {
+    let pid = localStorage.getItem('pid');
+    if (!pid) {
+      // simple 8-char ID
+      pid = Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('pid', pid);
+    }
+    return pid;
+  }
+
+  (async function sendIfQueryParams() {
+    const qs = new URLSearchParams(window.location.search);
+    if (!qs.toString()) return;                  // nothing to send
+
+    // 3) Convert ?rate_1=1&pick_1=C... -> { rate_1:"1", pick_1:"C", ... }
+    const row = Object.fromEntries(qs.entries());
+
+    try {
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          participantId: getParticipantId(),
+          rows: [row] // one wide row with all fields
+        })
+      });
+      const text = await resp.text();
+      console.log('Upload response:', text);
+    } catch (e) {
+      console.error('Upload failed:', e);
+    } finally {
+      // 4) Clean the URL so refresh/bookmark doesn’t re-send
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Optional: show a simple thank-you message
+      // document.body.innerHTML = '<h2>Thanks! Your response has been recorded.</h2>';
+    }
+  })();
+</script>
+
 </body>
 </html>
