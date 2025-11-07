@@ -1303,25 +1303,3 @@ const study = lab.util.fromObject({
 // Let's go!
 study.run()
 
-// When the study finishes (Submit button pressed)
-study.on('end', async () => {
-  try {
-    // 1️⃣ Get all data as an array of objects
-    const rows = lab.data.get();
-
-    // 2️⃣ Optional: generate a participant ID
-    const participantId = lab.util.randomString(8);
-
-    // 3️⃣ Send data to Google Apps Script
-    await fetch('https://script.google.com/macros/s/AKfycbxloi-Zqdkg_PTBcSAwywgEBJaidsfEzc-X7yhJtXBSSTZyQUXJOYPVmOgbGX869bD8/exec', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ participantId, rows })
-    });
-
-    console.log('✅ Data successfully sent to Google Sheets.');
-  } catch (err) {
-    console.error('❌ Error sending data:', err);
-  }
-});
-
