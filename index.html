@@ -30,8 +30,7 @@
 <script>
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxloi-Zqdkg_PTBcSAwywgEBJaidsfEzc-X7yhJtXBSSTZyQUXJOYPVmOgbGX869bD8/exec';
 
-  // 2) Stable participant ID (kept in localStorage)
-  function getParticipantId() {
+  function newParticipantId() {
     let pid = localStorage.getItem('pid');
     if (!pid) {
       pid = Math.random().toString(36).slice(2, 10);
@@ -40,34 +39,57 @@
     return pid;
   }
 
-  (async function sendIfQueryParams() {
-    const qs = new URLSearchParams(window.location.search);
-    if (!qs.toString()) return;                  // nothing to send
+  // Detect whether this form submit actually contains your survey answers
+  function hasSurveyData(row) {
+    return Object.keys(row).some((k) =>
+      /^rate_\d+$/.test(k) || /^pick_\d+$/.test(k)
+    );
+  }
 
-    // 3) Convert ?rate_1=1&pick_1=C... -> { rate_1:"1", pick_1:"C", ... }
-    const row = Object.fromEntries(qs.entries());
+  document.addEventListener('submit', async (event) => {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement)) return;
+
+    // Read form data first
+    const formData = new FormData(form);
+    const row = Object.fromEntries(formData.entries());
+
+    // If this submit doesn't look like your survey (no rate_x / pick_x),
+    // don't touch it — let the browser / lab.js handle it normally.
+    if (!hasSurveyData(row)) {
+      return;
+    }
+
+    // This *is* the final survey submit: handle it ourselves.
+    event.preventDefault();
+    event.stopPropagation();
+
+    const submitter = document.activeElement;
+    if (submitter && typeof submitter.disabled === 'boolean') {
+      submitter.disabled = true;
+    }
+
+    const payload = new URLSearchParams();
+    payload.set('participantId', newParticipantId());
+    payload.set('rows', JSON.stringify([row]));
 
     try {
-      const resp = await fetch(WEBAPP_URL, {
+      await fetch(WEBAPP_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          participantId: getParticipantId(),
-          rows: [row] // one wide row with all fields
-        })
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: payload.toString()
       });
-      const text = await resp.text();
-      console.log('Upload response:', text);
-    } catch (e) {
-      console.error('Upload failed:', e);
-    } finally {
-      // window.history.replaceState({}, '', window.location.pathname);
 
-      history.replaceState({}, '', location.pathname);
+      // On success: go to thank-you page
       window.location.href = '/thanks.html';
+    } catch (err) {
+      console.error('Upload failed:', err);
+      if (submitter) submitter.disabled = false;
+      alert('There was a problem submitting your responses. Please check your connection and click Submit again.');
     }
-  })();
+  }, true);
 </script>
 
 </body>
