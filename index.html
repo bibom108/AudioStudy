@@ -1,78 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Consent Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
-        }
-        .container {
-            max-width: 700px;
-            margin: 60px auto;
-            padding: 30px;
-            background: #ffffff;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .buttons {
-            margin-top: 30px;
-        }
-        button {
-            padding: 10px 18px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        .secondary {
-            margin-left: 10px;
-            background: #ddd;
-        }
-    </style>
-</head>
-<body>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Online Consent Form</title>
+  <style>
+    :root{
+      --text:#111;
+      --muted:#444;
+      --border:#000;
+      --bg:#fff;
+    }
+    body{
+      margin:0;
+      background:#f3f3f3;
+      color:var(--text);
+      font-family: "Times New Roman", Times, serif;
+      line-height:1.35;
+    }
+    .page{
+      max-width: 900px;
+      margin: 28px auto;
+      background: var(--bg);
+      padding: 42px 54px;
+      box-shadow: 0 1px 10px rgba(0,0,0,.08);
+    }
 
-<div class="container">
+    /* Word-like headings */
+    .h1{
+      text-align:center;
+      font-weight:700;
+      font-size: 20px;
+      margin: 0 0 8px 0;
+    }
+    .h2{
+      text-align:center;
+      font-weight:700;
+      font-size: 18px;
+      margin: 0 0 12px 0;
+    }
+    .ref{
+      text-align:center;
+      font-size: 14px;
+      margin: 0 0 18px 0;
+    }
+
+    p{
+      margin: 0 0 12px 0;
+      font-size: 14px;
+    }
+    .strong{ font-weight:700; }
+    .contact{
+      margin-top: 6px;
+    }
+
+    .printline{
+      margin-top: 16px;
+      margin-bottom: 16px;
+      font-size:14px;
+    }
+
+    /* Checkbox block like the Word table area */
+    .choice-table{
+      width:100%;
+      border: 1px solid var(--border);
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size:14px;
+    }
+    .choice-table td{
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+    .choice-left{
+      width: 78%;
+    }
+    .choice-right{
+      width: 22%;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .cb-row{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    input[type="checkbox"]{
+      width:16px;
+      height:16px;
+      margin-top:2px;
+      accent-color:#000;
+    }
+
+    .route-note{
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .btnbar{
+      margin-top: 16px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-start;
+    }
+    button{
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      padding: 10px 14px;
+      border: 1px solid #000;
+      background:#fff;
+      cursor:pointer;
+    }
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="h1">Online Consent form Template</div>
+    <div class="h2">Listening Test on Noise Noticeability in Speech Audio</div>
+    <div class="ref">NTU-IRB ref no. IRB-2025-1287</div>
+
     <p>
-        Please print a copy of this consent form for your records, if you so desire.
+      You are invited to participate in a research study on <span class="strong">Listening Test on Noise Noticeability in Speech Audio</span>.
+      This study is conducted by Prof. Rui Tan, College of Computing and Data Science, from Nanyang Technological University.
     </p>
 
-    <label>
-        <input type="checkbox" id="agree">
-        I have read and understood the above consent form. I certify that I am
-        21 years old or older and, by clicking the button below, indicate my
-        willingness to voluntarily take part in the study.
-    </label>
+    <p>
+      This study will take approximately 5-10 minutes of your time. You will be asked to complete an online survey about listening to pairs
+      of short speech audio clips and answer simple questions about whether you notice any added noise. About 100 participants will be recruited
+      for this research.
+    </p>
 
-    <div class="buttons">
-        <button id="accept" disabled>Accept & Continue</button>
-        <button id="decline" class="secondary">Decline</button>
+    <p>
+      Your participation in this study is completely voluntary, and you have the right to withdraw from the study at any time without any penalty.
+      You may skip any questions you do not wish to answer. If you do not wish to complete this survey, just close your browser.
+    </p>
+
+    <p>
+      Your participation in this research will be kept confidential, and data will be averaged and reported in aggregate. Your responses will be
+      anonymous and IP addresses will not be collected to guarantee complete anonymity. Possible outlets of dissemination may be academic publications,
+      conference presentations, technical reports, and thesis or dissertation work. Although your participation in this research may not benefit you personally,
+      it will help us improve research on how humans perceive noise in speech audio, which may benefit future audio and machine-learning systems.
+    </p>
+
+    <p>There are no risks to individuals participating in this survey beyond those that exist in daily life.</p>
+
+    <p class="contact">
+      If you have questions about this project, you may contact Prof. Tan Rui, tanrui@ntu.edu.sg, 6790 5491, or Phuc Nguyen,
+      ducphuc001@e.ntu.edu.sg, 86975841.
+    </p>
+
+    <p>
+      This project has been reviewed and approved by NTU-Institutional Review Board. Questions concerning your rights as a participant in this research
+      may be directed to the NTU-IRB at IRB@ntu.edu.sg or call 6592 2495.
+    </p>
+
+    <p class="printline">Please print a copy of this consent form for your records, if you so desire.</p>
+
+    <!-- Word-like checkbox area -->
+    <table class="choice-table" aria-label="Consent choices">
+      <tr>
+        <td class="choice-left">
+          <div class="cb-row">
+            <input type="checkbox" id="agree">
+            <label for="agree">
+              I have read and understood the above consent form. I certify that I am 21 years old or older and, by clicking the next button
+              to enter the survey, I indicate my willingness to voluntarily take part in the study.
+            </label>
+          </div>
+        </td>
+        <td class="choice-right">
+          <div class="route-note">(route to survey page)</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="choice-left">
+          <div class="cb-row">
+            <input type="checkbox" id="decline">
+            <label for="decline">I do not wish to participate in this study.</label>
+          </div>
+        </td>
+        <td class="choice-right">
+          <div class="route-note">(route to exit page)</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Buttons (like “next button”) -->
+    <div class="btnbar">
+      <button id="nextBtn" disabled>Next</button>
     </div>
-</div>
 
-<script>
-    const agree = document.getElementById("agree");
-    const accept = document.getElementById("accept");
-    const decline = document.getElementById("decline");
+  </div>
 
-    agree.addEventListener("change", () => {
-        accept.disabled = !agree.checked;
+  <script>
+    const agree = document.getElementById('agree');
+    const decline = document.getElementById('decline');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function sync(){
+      // mutually exclusive
+      if (agree.checked) decline.checked = false;
+      if (decline.checked) agree.checked = false;
+
+      // enable Next only if one selected
+      nextBtn.disabled = !(agree.checked || decline.checked);
+    }
+
+    agree.addEventListener('change', sync);
+    decline.addEventListener('change', sync);
+
+    nextBtn.addEventListener('click', () => {
+      if (agree.checked) {
+        window.location.href = "survey.html";   // survey page
+      } else {
+        window.location.href = "exit.html";    // home/exit page
+      }
     });
-
-    // Accept → survey
-    accept.onclick = () => {
-        window.location.href = "survey.html";
-    };
-
-    // Decline → exit page
-    decline.onclick = () => {
-        window.location.href = "exit.html";
-    };
-</script>
-
+  </script>
 </body>
 </html>
