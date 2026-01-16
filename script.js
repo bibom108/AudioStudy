@@ -36,12 +36,6 @@ const study = lab.util.fromObject({
           "type": "divider"
         },
         {
-          "required": false,
-          "type": "input",
-          "label": "What is your name?",
-          "name": "user_name"
-        },
-        {
           "required": true,
           "type": "radio",
           "label": "Please indicate which device you are currently using.",
